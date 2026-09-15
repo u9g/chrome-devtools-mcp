@@ -18,19 +18,14 @@ export function buildCommand(
   args: Record<string, ArgDef>,
 ): {command: string; usage: string} {
   let command = commandName;
+  let flags = '';
   for (const [name, arg] of Object.entries(args)) {
-    if (!arg.required) {
-      continue;
-    }
-    command += arg.type === 'array' ? ` <${name}..>` : ` <${name}>`;
-  }
-
-  let usage = `$0 ${command}`;
-  for (const [name, arg] of Object.entries(args)) {
-    if (!arg.required) {
-      usage += ` [--${name}]`;
+    if (arg.required) {
+      command += arg.type === 'array' ? ` <${name}..>` : ` <${name}>`;
+    } else {
+      flags += ` [--${name}]`;
     }
   }
 
-  return {command, usage};
+  return {command, usage: `$0 ${command}${flags}`};
 }
